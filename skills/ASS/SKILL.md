@@ -1,34 +1,36 @@
 ---
-name: dsc-b
+name: ASS
 description: >-
-  dsc-b / B款：先按 dsc-a 加齐 DiagStack 注释，再按 MISRA C 改写代码。用户说
-  dsc-b、B款、MISRA、注释加改码时使用。包含文件头、Service Name、复杂函数
-  a./1. 体内步骤注释，以及 Yoda/大括号/无符号后缀/显式 cast/(void) 等 MISRA 修复。
+  ASS (aliases: ass, Ass, A, @ASS, /ASS — case-insensitive): DiagStack C/H
+  comments + MISRA C code fixes in one pass. File banner, section blocks, .h brief
+  / .c full Service Name, mandatory a./1. in-body steps for complex functions,
+  then MISRA (Yoda, braces, 0U, (void), switch default). Use when user says ASS,
+  @ASS, /ASS, A, or asks for DiagStack comment + MISRA.
 ---
 
-# dsc-b（B款）— 注释 + MISRA C 改码
+# ASS — DiagStack 注释 + MISRA C 改码
 
-短调用名：**`dsc-b`**（B款 · 注释 + MISRA）
+**短调用名（不区分大小写）**：`ASS` / `ass` / `@ASS` / `/ASS` / `A`
 
-先完整执行 **dsc-a** 注释规范，再在同一次修改中按本文件 MISRA 规则改代码。  
-只加注释、不改逻辑时请用 **`dsc-a`**。
+任意项目对话中说上述任一即可触发。本 skill **始终**先加齐注释，再按 MISRA 改码（已取消「只注释」款）。
 
 参考基准：`tviibe1m/src/DiagStack/Can/` + Boot 分步下载等复杂 `.c`。
 
 ## 执行顺序（必须）
 
-1. **注释**（与 dsc-a 相同）：文件头、分区、`.h` 简写 / `.c` 完整 Service Name、复杂函数体内 `a.`/`1.` 步骤注释
+1. **注释**：文件头、分区、`.h` 简写 / `.c` 完整 Service Name、复杂函数体内 `a.`/`1.` 步骤注释
 2. **改码**：按下方 MISRA 条款修复；保持功能等价；改动处步骤注释仍要保留/更新
 3. **自检**：无 `//`；复杂分支有体内步骤注释；无无括号控制语句；字面量带 `U`/`UL` 等后缀
 
 ## 何时套用
 
-- 用户说「dsc-b」「B款」「MISRA」「注释并改码」「按 MISRA 修」
-- 审查/整改 DiagStack `.c` / `.h`，既要规范注释又要过 MISRA 习惯
+- 用户说「ASS」「@ASS」「/ASS」「A」「ass」（大小写均可）
+- 用户要求 DiagStack 注释、Can 风格注释、并按 MISRA 改码
+- 审查/整改 DiagStack 或 Boot `.c` / `.h`
 
 ---
 
-# 第一部分：注释规范（等同 dsc-a）
+# 第一部分：注释规范
 
 ## 语言与语气
 
@@ -93,7 +95,7 @@ External Declarations、Global Functions。
 
 ---
 
-# 第二部分：MISRA C 改码规则（B款专属）
+# 第二部分：MISRA C 改码规则
 
 目标：功能等价前提下贴近 **MISRA C:2012** 常见强制/必需习惯（嵌入式 / AUTOSAR 栈）。  
 不臆造业务行为；不确定的偏离用注释标出原因，不强行破坏平台约定。
@@ -173,7 +175,7 @@ if (ret) {
 Boot_FlagPara_ClearBootRequest(&s_stFinishMeta);
 ```
 
-**合格（B款）：**
+**合格（ASS）：**
 
 ```c
 /* a. 可选输出初始化：默认 NRC 为 OK */
@@ -188,19 +190,12 @@ if (0U != ret)
 (void)Boot_FlagPara_ClearBootRequest(&s_stFinishMeta);
 ```
 
-复杂分步函数的完整注释范例见 [examples.md](examples.md)；B款在同类代码上再叠加本文件 M1–M8。
+复杂分步函数的完整注释范例见 [examples.md](examples.md)；ASS 在同类代码上再叠加本文件 M1–M8。
 
 ## 不要做的事
 
-- 不要在只要求「A款 / dsc-a」时偷偷改逻辑
 - 不要用 `//`
 - 不要复杂函数只写 Service Name、函数体零步骤注释
 - 不要为消 MISRA 告警而改变对外语义或删除错误处理
 - 不要在 `.h` 写 Arguments / Return Value
-
-## 与 A款关系
-
-| 调用 | Skill | 行为 |
-|------|-------|------|
-| `dsc-a` / A款 | 本仓库 `skills/dsc-a` | **只注释** |
-| `dsc-b` / B款 | 本仓库 `skills/dsc-b` | **注释 + MISRA 改码** |
+- 不要省略文件头与 END OF FILE

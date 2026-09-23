@@ -1,30 +1,29 @@
 #!/usr/bin/env bash
-# Install DiagStack Cursor skills (dsc-a, dsc-b) to ~/.cursor/skills/
+# Install ASS skill to ~/.cursor/skills/ASS/
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET_ROOT="${HOME}/.cursor/skills"
+SKILL_NAME="ASS"
+SRC="${REPO_ROOT}/skills/${SKILL_NAME}"
+DST="${TARGET_ROOT}/${SKILL_NAME}"
+
+if [[ ! -d "${SRC}" ]]; then
+  echo "Skill source not found: ${SRC}" >&2
+  exit 1
+fi
 
 mkdir -p "${TARGET_ROOT}"
+rm -rf "${DST}"
+cp -R "${SRC}" "${DST}"
+echo "Installed: ${DST}"
 
-install_skill() {
-  local name="$1"
-  local src="${REPO_ROOT}/skills/${name}"
-  local dst="${TARGET_ROOT}/${name}"
-  if [[ ! -d "${src}" ]]; then
-    echo "Skill source not found: ${src}" >&2
-    exit 1
+# Remove legacy skill dirs
+for legacy in dsc-a dsc-b diagstack-c-comment-style ass Ass; do
+  if [[ "${legacy}" != "${SKILL_NAME}" ]]; then
+    rm -rf "${TARGET_ROOT}/${legacy}"
   fi
-  rm -rf "${dst}"
-  cp -R "${src}" "${dst}"
-  echo "Installed: ${dst}"
-}
-
-install_skill "dsc-a"
-install_skill "dsc-b"
-
-# Remove legacy long name if present
-rm -rf "${TARGET_ROOT}/diagstack-c-comment-style"
+done
 
 echo "Restart Cursor or start a new chat."
-echo "Call short names: dsc-a (comments only) | dsc-b (comments + MISRA)"
+echo "Invoke (case-insensitive): @ASS | /ASS | ASS | A"

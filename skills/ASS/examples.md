@@ -1,6 +1,6 @@
-# DiagStack 注释示例（dsc-a / dsc-b 共用）
+# DiagStack 注释示例（ASS skill）
 
-`dsc-a` 只补这类注释；`dsc-b` 在同类注释基础上再按 MISRA 改码。
+调用 **ASS**（`@ASS` / `/ASS` / `A`，不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。
 
 ## Can.h — 文件头 + 分区 + 成员 + 原型（简写）
 
