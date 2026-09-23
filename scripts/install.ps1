@@ -1,37 +1,55 @@
-# Install ASS skill to user global skills folder.
+# Install ass (ASS) skill to user skill dirs Cursor actually scans.
 param(
-    [string]$TargetRoot = "$env:USERPROFILE\.cursor\skills"
+    [string]$RepoRoot = (Split-Path $PSScriptRoot -Parent)
 )
 
 $ErrorActionPreference = "Stop"
-$RepoRoot = Split-Path $PSScriptRoot -Parent
-$SkillName = "ASS"
+$SkillName = "ass"
 $SkillSrc = Join-Path $RepoRoot "skills\$SkillName"
-$SkillDst = Join-Path $TargetRoot $SkillName
 
 if (-not (Test-Path $SkillSrc)) {
     Write-Error "Skill source not found: $SkillSrc"
 }
 
-New-Item -ItemType Directory -Force -Path $TargetRoot | Out-Null
-if (Test-Path $SkillDst) {
-    Remove-Item -Recurse -Force $SkillDst
+function Get-PathKey([string]$Path) {
+    return $Path.TrimEnd('\', '/').ToLowerInvariant()
 }
-Copy-Item -Recurse -Force $SkillSrc $SkillDst
-Write-Host "Installed: $SkillDst"
 
-# Remove legacy skill dirs (Windows paths are case-insensitive; skip current name)
-$LegacyNames = @("dsc-a", "dsc-b", "diagstack-c-comment-style")
-foreach ($legacy in $LegacyNames) {
-    $path = Join-Path $TargetRoot $legacy
-    if (Test-Path $path) {
-        # Avoid deleting ASS if somehow matched
-        if ((Resolve-Path $path).Path -ne (Resolve-Path $SkillDst).Path) {
-            Remove-Item -Recurse -Force $path
-            Write-Host "Removed legacy: $path"
+function Install-To([string]$Root) {
+    New-Item -ItemType Directory -Force -Path $Root | Out-Null
+    $dst = Join-Path $Root $SkillName
+    $keepKey = Get-PathKey $dst
+
+    foreach ($legacy in @("ASS", "dsc-a", "dsc-b", "diagstack-c-comment-style", "Ass")) {
+        $p = Join-Path $Root $legacy
+        if (-not (Test-Path $p)) { continue }
+        if ((Get-PathKey $p) -eq $keepKey) {
+            Write-Host "Skip legacy remove (same path as target): $p"
+            continue
         }
+        Remove-Item -Recurse -Force $p
+        Write-Host "Removed legacy: $p"
     }
+
+    if (Test-Path $dst) {
+        Remove-Item -Recurse -Force $dst
+    }
+    New-Item -ItemType Directory -Force -Path $dst | Out-Null
+    Copy-Item -Recurse -Force (Join-Path $SkillSrc "*") $dst
+
+    $skillMd = Join-Path $dst "SKILL.md"
+    if (-not (Test-Path $skillMd)) {
+        Write-Error "SKILL.md missing after install: $skillMd"
+    }
+    Write-Host "Installed: $dst"
 }
 
-Write-Host "Restart Cursor or start a new chat."
-Write-Host "Invoke (case-insensitive): @ASS | /ASS | ASS | A"
+Install-To (Join-Path $env:USERPROFILE ".cursor\skills")
+Install-To (Join-Path $env:USERPROFILE ".agents\skills")
+
+Write-Host ""
+Write-Host "Verify with:"
+Write-Host "  dir `$env:USERPROFILE\.cursor\skills\ass\SKILL.md"
+Write-Host "  dir `$env:USERPROFILE\.agents\skills\ass\SKILL.md"
+Write-Host ""
+Write-Host "Then FULLY quit Cursor and reopen. New chat invoke: @ass  or  ASS  or  A"
