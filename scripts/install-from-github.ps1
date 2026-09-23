@@ -1,8 +1,6 @@
 # One-shot: download ass skill from GitHub into Cursor skill dirs (no clone needed).
 # PowerShell:
 #   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/cursor/fix-ass-skill-install-d292/scripts/install-from-github.ps1 | iex
-# After merge to main you can also use:
-#   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/main/scripts/install-from-github.ps1 | iex
 
 param(
     [string]$Owner = "NeoYYH",
@@ -43,19 +41,41 @@ function Resolve-Base {
     throw "Could not find skills/ass (or ASS) SKILL.md on GitHub. Check network / repo."
 }
 
+function Get-PathKey([string]$Path) {
+    return $Path.TrimEnd('\', '/').ToLowerInvariant()
+}
+
+function Remove-LegacyDirs([string]$Root, [string]$KeepPath) {
+    $keepKey = Get-PathKey $KeepPath
+    # On Windows ASS and ass are the same folder — never delete KeepPath.
+    foreach ($legacy in @("ASS", "dsc-a", "dsc-b", "diagstack-c-comment-style", "Ass")) {
+        $p = Join-Path $Root $legacy
+        if (-not (Test-Path $p)) { continue }
+        if ((Get-PathKey $p) -eq $keepKey) {
+            Write-Host "Skip legacy remove (same path as target on this OS): $p"
+            continue
+        }
+        Remove-Item -Recurse -Force $p -ErrorAction SilentlyContinue
+        Write-Host "Removed legacy: $p"
+    }
+}
+
 $resolved = Resolve-Base
 Write-Host "Using ref=$($resolved.Ref) dir=$($resolved.Dir)"
 
 function Install-FromGitHub([string]$Root) {
+    New-Item -ItemType Directory -Force -Path $Root | Out-Null
     $dst = Join-Path $Root $SkillName
-    New-Item -ItemType Directory -Force -Path $dst | Out-Null
-    foreach ($legacy in @("ASS", "dsc-a", "dsc-b", "diagstack-c-comment-style")) {
-        $p = Join-Path $Root $legacy
-        if (Test-Path $p) {
-            Remove-Item -Recurse -Force $p -ErrorAction SilentlyContinue
-            Write-Host "Removed legacy: $p"
-        }
+
+    # 1) Clean other legacy names first (skip if same path as dst on case-insensitive FS)
+    Remove-LegacyDirs -Root $Root -KeepPath $dst
+
+    # 2) Recreate destination AFTER cleanup
+    if (Test-Path $dst) {
+        Remove-Item -Recurse -Force $dst
     }
+    New-Item -ItemType Directory -Force -Path $dst | Out-Null
+
     foreach ($f in $Files) {
         $url = "$($resolved.Base)/$f"
         $out = Join-Path $dst $f
