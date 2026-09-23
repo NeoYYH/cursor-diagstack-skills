@@ -1,13 +1,16 @@
 # One-shot: download ass skill from GitHub into Cursor skill dirs (no clone needed).
-# PowerShell:
-#   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/cursor/fix-ass-skill-install-d292/scripts/install-from-github.ps1 | iex
+# PowerShell (after merge to main):
+#   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/main/scripts/install-from-github.ps1 | iex
+# Prefer the README "已验证" paste install if raw CDN caches an old script.
+#
+# Windows note: ASS and ass are the same path — never delete KeepPath while cleaning legacy.
 
 param(
     [string]$Owner = "NeoYYH",
     [string]$Repo = "cursor-diagstack-skills",
     [string[]]$Refs = @(
-        "cursor/fix-ass-skill-install-d292",
-        "main"
+        "main",
+        "cursor/fix-ass-skill-install-d292"
     )
 )
 
