@@ -1,6 +1,8 @@
-# DiagStack 注释示例（ASS skill）
+# DiagStack 注释示例（ass / ASS skill）
 
-调用 **ASS**（`@ASS` / `/ASS` / `A`，不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。
+调用 **@ass** / **ASS** / **A**（不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。
+
+> 磁盘目录必须是小写 `ass/`。
 
 ## Can.h — 文件头 + 分区 + 成员 + 原型（简写）
 
