@@ -1,18 +1,20 @@
 ---
-name: ASS
+name: ass
 description: >-
-  ASS (aliases: ass, Ass, A, @ASS, /ASS — case-insensitive): DiagStack C/H
-  comments + MISRA C code fixes in one pass. File banner, section blocks, .h brief
-  / .c full Service Name, mandatory a./1. in-body steps for complex functions,
-  then MISRA (Yoda, braces, 0U, (void), switch default). Use when user says ASS,
-  @ASS, /ASS, A, or asks for DiagStack comment + MISRA.
+  ASS / ass / A / @ASS / /ASS (case-insensitive): DiagStack C/H comments + MISRA C
+  code fixes in one pass. File banner, section blocks, .h brief / .c full Service
+  Name, mandatory a./1. in-body steps for complex functions, then MISRA (Yoda,
+  braces, 0U, (void), switch default). Trigger when user says ASS, @ASS, /ASS, A,
+  ass, or asks for DiagStack comment + MISRA.
 ---
 
 # ASS — DiagStack 注释 + MISRA C 改码
 
 **短调用名（不区分大小写）**：`ASS` / `ass` / `@ASS` / `/ASS` / `A`
 
-任意项目对话中说上述任一即可触发。本 skill **始终**先加齐注释，再按 MISRA 改码（已取消「只注释」款）。
+> 目录名必须为小写 `ass`（Cursor 要求 skill 文件夹用小写）；对话里仍可写 `ASS`。
+
+任意项目对话中说上述任一即可触发。本 skill **始终**先加齐注释，再按 MISRA 改码。
 
 参考基准：`tviibe1m/src/DiagStack/Can/` + Boot 分步下载等复杂 `.c`。
 
