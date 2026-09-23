@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
-# Install DiagStack Cursor skills to ~/.cursor/skills/
+# Install ASS skill to ~/.cursor/skills/ASS/
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SKILL_SRC="${REPO_ROOT}/skills/diagstack-c-comment-style"
 TARGET_ROOT="${HOME}/.cursor/skills"
-SKILL_DST="${TARGET_ROOT}/diagstack-c-comment-style"
+SKILL_NAME="ASS"
+SRC="${REPO_ROOT}/skills/${SKILL_NAME}"
+DST="${TARGET_ROOT}/${SKILL_NAME}"
 
-if [[ ! -d "${SKILL_SRC}" ]]; then
-  echo "Skill source not found: ${SKILL_SRC}" >&2
+if [[ ! -d "${SRC}" ]]; then
+  echo "Skill source not found: ${SRC}" >&2
   exit 1
 fi
 
 mkdir -p "${TARGET_ROOT}"
-rm -rf "${SKILL_DST}"
-cp -R "${SKILL_SRC}" "${SKILL_DST}"
+rm -rf "${DST}"
+cp -R "${SRC}" "${DST}"
+echo "Installed: ${DST}"
 
-echo "Installed: ${SKILL_DST}"
-echo "Restart Cursor or start a new chat to use diagstack-c-comment-style."
+# Remove legacy skill dirs
+for legacy in dsc-a dsc-b diagstack-c-comment-style ass Ass; do
+  if [[ "${legacy}" != "${SKILL_NAME}" ]]; then
+    rm -rf "${TARGET_ROOT}/${legacy}"
+  fi
+done
+
+echo "Restart Cursor or start a new chat."
+echo "Invoke (case-insensitive): @ASS | /ASS | ASS | A"

@@ -1,4 +1,6 @@
-# DiagStack 注释示例（摘自 Can 模块）
+# DiagStack 注释示例（ASS skill）
+
+调用 **ASS**（`@ASS` / `/ASS` / `A`，不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。
 
 ## Can.h — 文件头 + 分区 + 成员 + 原型（简写）
 
@@ -142,4 +144,162 @@ const Can_HwMappingConfigType Can_HwMappingTable[Can_HwMT_MAX] = {
         .bIsFdMode      = (USE_CANFD00_MODE == 1),          /* 是否激活 CAN-FD 柔性数据速率模式 */
     },
 };
+```
+
+## Boot1_Download.c — 复杂分步函数（完整块头 + 函数体步骤注释）
+
+多阶段状态机（IDLE → ERASE → COPY → META）必须同时有 Service Name 块注释与函数体内 `a.` / `1.` 步骤注释；禁止只写块头、函数体零注释。
+
+```c
+/*
+---------------------------------------------------------------------------------------------------
+* Service Name: Boot1_Download_FinishStep
+* Description : 0x37 分步完成：校验、擦活动区、拷贝、更新 FlagPara 元数据
+* Arguments   : pnrc - 可选负响应码输出指针
+* Return Value: BOOT1_FINISH_OK / BOOT1_FINISH_PENDING / BOOT1_FINISH_FAIL
+* Author      : YYH
+---------------------------------------------------------------------------------------------------
+*/
+Boot1_FinishResultType Boot1_Download_FinishStep(Dcm_NegativeRespType* pnrc)
+{
+    uint32_t u32SectorSize;
+
+    /* a. 可选输出初始化：默认 NRC 为 OK */
+    if (NULL != pnrc)
+    {
+        *pnrc = DCM_NRC_OK;
+    }
+
+    /* b. 时序守卫：仅允许在 Transferring 态进入分步完成 */
+    if (s_eState != BOOT1_DL_TRANSFERRING)
+    {
+        if (NULL != pnrc)
+        {
+            *pnrc = DCM_NRC_REQUEST_SEQUENCE_ERROR;
+        }
+        return BOOT1_FINISH_FAIL;
+    }
+
+    /* c. IDLE 入口：长度校验、流刷盘、镜像校验，再切入擦除阶段 */
+    if (s_eFinishPhase == BOOT1_FINISH_PHASE_IDLE)
+    {
+        /* 1. 接收长度必须与约定镜像大小一致 */
+        if (s_u32Received != s_u32ImageSize)
+        {
+            if (NULL != pnrc)
+            {
+                *pnrc = DCM_NRC_GENERAL_PROGRAMMING_FAILURE;
+            }
+            return BOOT1_FINISH_FAIL;
+        }
+
+        /* 2. 刷出剩余编程缓冲 */
+        if (0U != Boot1_CodeFlash_StreamFlush())
+        {
+            if (NULL != pnrc)
+            {
+                *pnrc = DCM_NRC_GENERAL_PROGRAMMING_FAILURE;
+            }
+            return BOOT1_FINISH_FAIL;
+        }
+
+        /* 3. 校验后备区镜像有效性 */
+        if (0U == Boot1_Download_ValidateImage(BOOT1_BOOT2_BACK_ADDR))
+        {
+            if (NULL != pnrc)
+            {
+                *pnrc = DCM_NRC_GENERAL_PROGRAMMING_FAILURE;
+            }
+            return BOOT1_FINISH_FAIL;
+        }
+
+        /* 4. 准备 CodeFlash 会话并进入 ERASE */
+        Boot1_CodeFlash_Prepare();
+        s_u32FinishOffset = 0U;
+        s_eFinishPhase = BOOT1_FINISH_PHASE_ERASE;
+    }
+
+    /* d. 喂狗：分步擦写耗时，防止外部看门狗复位 */
+    UJA1169_FeedWatchdog();
+
+    /* e. ERASE：按扇区擦活动 Boot2，单次返回 PENDING */
+    if (s_eFinishPhase == BOOT1_FINISH_PHASE_ERASE)
+    {
+        /* 1. 未擦完：擦当前扇区后推进偏移并挂起 */
+        if (s_u32FinishOffset < BOOT1_BOOT2_CODE_SIZE)
+        {
+            u32SectorSize = Boot1_CodeFlash_GetSectorSize(BOOT1_BOOT2_ENTRY_ADDR + s_u32FinishOffset);
+            if (0U != Boot1_CodeFlash_EraseSector(BOOT1_BOOT2_ENTRY_ADDR + s_u32FinishOffset))
+            {
+                Boot1_CodeFlash_EndSession();
+                Boot1_Download_FinishAbort();
+                if (NULL != pnrc)
+                {
+                    *pnrc = DCM_NRC_GENERAL_PROGRAMMING_FAILURE;
+                }
+                return BOOT1_FINISH_FAIL;
+            }
+            s_u32FinishOffset += u32SectorSize;
+            return BOOT1_FINISH_PENDING;
+        }
+
+        /* 2. 擦完：复位偏移，切入 COPY */
+        s_u32FinishOffset = 0U;
+        s_eFinishPhase = BOOT1_FINISH_PHASE_COPY;
+        return BOOT1_FINISH_PENDING;
+    }
+
+    /* f. COPY：按行从后备区拷到活动区，单次返回 PENDING */
+    if (s_eFinishPhase == BOOT1_FINISH_PHASE_COPY)
+    {
+        /* 1. 未拷完：CopyRow 失败则结束会话并 Abort */
+        if (s_u32FinishOffset < s_u32ImageSize)
+        {
+            if (0U != Boot1_CodeFlash_CopyRow(BOOT1_BOOT2_ENTRY_ADDR + s_u32FinishOffset,
+                                              BOOT1_BOOT2_BACK_ADDR + s_u32FinishOffset))
+            {
+                Boot1_CodeFlash_EndSession();
+                Boot1_Download_FinishAbort();
+                if (NULL != pnrc)
+                {
+                    *pnrc = DCM_NRC_GENERAL_PROGRAMMING_FAILURE;
+                }
+                return BOOT1_FINISH_FAIL;
+            }
+            s_u32FinishOffset += BOOT1_CF_ROW_SIZE;
+            return BOOT1_FINISH_PENDING;
+        }
+
+        /* 2. 拷完：切入 META */
+        s_eFinishPhase = BOOT1_FINISH_PHASE_META;
+        return BOOT1_FINISH_PENDING;
+    }
+
+    /* g. META：结束 Flash 会话，清启动请求并回写 FlagPara */
+    if (s_eFinishPhase == BOOT1_FINISH_PHASE_META)
+    {
+        Boot1_CodeFlash_EndSession();
+        Boot_FlagPara_Read(&s_stFinishMeta);
+        (void)Boot_FlagPara_ClearBootRequest(&s_stFinishMeta);
+        if (0U == Boot_FlagPara_Write(&s_stFinishMeta))
+        {
+            if (NULL != pnrc)
+            {
+                *pnrc = DCM_NRC_GENERAL_PROGRAMMING_FAILURE;
+            }
+            Boot1_Download_FinishAbort();
+            return BOOT1_FINISH_FAIL;
+        }
+        Boot1_Download_Reset();
+        return BOOT1_FINISH_OK;
+    }
+
+    /* h. 未知阶段兜底：GENERAL_REJECT + Abort */
+    if (NULL != pnrc)
+    {
+        *pnrc = DCM_NRC_GENERAL_REJECT;
+    }
+    Boot1_Download_FinishAbort();
+    return BOOT1_FINISH_FAIL;
+}
 ```
