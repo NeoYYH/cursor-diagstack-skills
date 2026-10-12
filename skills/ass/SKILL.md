@@ -4,7 +4,9 @@ description: >-
   ASS / ass / A / @ASS / /ASS (case-insensitive): DiagStack C/H comments + MISRA C
   code fixes in one pass. File banner, section blocks, .h brief / .c full Service
   Name, mandatory a./1. in-body steps for complex functions, then MISRA (Yoda,
-  braces, 0U, (void), switch default). Trigger when user says ASS, @ASS, /ASS, A,
+  braces, 0U, (void), switch default). Public functions use AUTOSAR Classic names
+  (Adc_ReadTask) only when writing code, or when the user forces it (强制命名);
+  comment-only keeps the original names. Trigger when user says ASS, @ASS, /ASS, A,
   ass, or asks for DiagStack comment + MISRA.
 ---
 
@@ -51,17 +53,44 @@ description: >-
 
 后补注释时：文件头「版    本」改为本次修订号（上例为 `V1.1`），「日    期」改为本次日期。原先没有可靠日期时，初始行的日期列写 `未知`，不要编造。
 
+## 公开函数命名（AUTOSAR Classic）
+
+只约束**公开函数**（`.h` 里声明的，或 `.c` 里非 `static` 的对外接口）。`static` 不改名。
+
+形式：模块前缀 + 一个下划线 + 每个单词首字母大写、单词之间不再加下划线。
+
+| 原来 | 结果 |
+|------|------|
+| `adc_read_task` / `ADC_Read_Task` | `Adc_ReadTask` |
+| `Can_Write` | 已符合，不改 |
+
+模块前缀：本模块已有公开函数的前缀；没有则用文件名（去掉扩展名）。全大写缩写改成首字母大写、其余小写（`ADC` → `Adc`）。单词从蛇形或驼峰拆开。拆不开就保持原名，不要编。
+
+改名时同时改：`.h` 原型、`.c` 定义、改动范围内的调用、注释里的 Service Name。Service Name 必须等于最终函数名。
+
+三种需求，不要混：
+
+| 需求 | 函数名 |
+|------|--------|
+| 只加注释、补注释，或默认 `@ass` / `ASS` / `A`（含随后的 MISRA 改码） | **不改**原函数名。Service Name 写原名 |
+| 写代码，并套用本注释标准（实现、新增、改写公开函数） | 本轮**新写或改写**的公开函数用上面的形式。无关的旧函数不顺手改名 |
+| 强制命名：`强制命名`、`强制 AUTOSAR`、`AUTOSAR命名`、`按 AUTOSAR Classic 改函数名` | 加注释的同时，把不合规的公开函数改成该形式 |
+
+示例见 [examples.md](examples.md) 的「公开函数命名」。
+
 ## 执行顺序（必须）
 
-1. **注释**：文件头、分区、`.h` 简写 / `.c` 完整 Service Name、复杂函数体内 `a.`/`1.` 步骤注释
-2. **改码**：按下方 MISRA 条款修复；保持功能等价；改动处步骤注释仍要保留/更新
-3. **自检**：无 `//`；复杂分支有体内步骤注释；无无括号控制语句；字面量带 `U`/`UL` 等后缀
+1. **注释**：文件头、分区、`.h` 简写 / `.c` 完整 Service Name、复杂函数体内 `a.`/`1.` 步骤注释。Service Name 用本轮最终会留下的函数名
+2. **命名**：仅「写代码」或「强制命名」时，按上一节改公开函数名并改齐引用
+3. **改码**：按下方 MISRA 条款修复；保持功能等价；改动处步骤注释仍要保留/更新。MISRA 本身不作为改函数名的理由
+4. **自检**：无 `//`；复杂分支有体内步骤注释；无无括号控制语句；字面量带 `U`/`UL` 等后缀；该改名时公开函数已是 `Adc_ReadTask` 这种形式，只加注释时原名还在
 
 ## 何时套用
 
 - 用户说「ASS」「@ASS」「/ASS」「A」「ass」（大小写均可）
 - 用户要求 DiagStack 注释、Can 风格注释、并按 MISRA 改码
 - 审查/整改 DiagStack 或 Boot `.c` / `.h`
+- 用户说「强制命名」「强制 AUTOSAR」「AUTOSAR命名」「按 AUTOSAR Classic 改函数名」：加注释并改公开函数名
 
 ---
 
@@ -130,7 +159,7 @@ External Declarations、Global Functions。
 | `.h` | 简写 | Service Name、Description、Author |
 | `.c` / static | 完整 | 另加 Arguments、Return Value |
 
-`.h` 不写 Arguments / Return Value；无参 / `void` 在 `.c` 写 `None`。
+`.h` 不写 Arguments / Return Value；无参 / `void` 在 `.c` 写 `None`。Service Name 与函数名一致；函数名改不改见上文「公开函数命名」。
 
 ## 4. 函数体内步骤注释（必填）
 
@@ -256,3 +285,5 @@ if (0U != ret)
 - 不要省略文件头与 END OF FILE
 - 不要把后补注释的人写成「初始发布版本」的作者
 - 不要只改一处 `AUTHOR`：仓库、`~/.cursor/skills/ass/AUTHOR`、`~/.agents/skills/ass/AUTHOR` 要一致
+- 不要在只加注释时修改函数名。要改名必须是写代码，或用户说了「强制命名」
+- 不要给 `static` 函数套 AUTOSAR 公开命名，也不要改成 `Adc_Read_Task` 这种单词之间再加下划线的形式

@@ -120,6 +120,74 @@ Set-Content -Path skills\ass\AUTHOR -Value "ZS" -Encoding ascii
 
 `AUTHOR` 改成 `ZS` 后，上面新建和本次修订行里的 `YYH` 换成 `ZS`。初始发布版本那一行仍然是 `未知`。
 
+## 公开函数命名
+
+公开函数：模块前缀 + `_` + 每个单词首字母大写。读 ADC 的任务函数写成 `Adc_ReadTask`，不要写成 `Adc_Read_Task`。
+
+### 只加注释：不改名
+
+对话：`@ass 给 adc_read_task 补注释`
+
+```c
+/*
+---------------------------------------------------------------------------------------------------
+* Service Name: adc_read_task
+* Description : 周期读取 ADC 采样结果
+* Arguments   : None
+* Return Value: None
+* Author      : YYH
+---------------------------------------------------------------------------------------------------
+*/
+void adc_read_task(void)
+{
+    /* a. 启动转换并读回结果 */
+}
+```
+
+### 写代码并套用注释标准：新函数按 AUTOSAR Classic
+
+对话：`@ass 写一个读 ADC 的任务函数`
+
+```c
+/*
+---------------------------------------------------------------------------------------------------
+* Service Name: Adc_ReadTask
+* Description : 周期读取 ADC 采样结果
+* Arguments   : None
+* Return Value: None
+* Author      : YYH
+---------------------------------------------------------------------------------------------------
+*/
+void Adc_ReadTask(void)
+{
+    /* a. 启动转换并读回结果 */
+}
+```
+
+同文件里已有的 `adc_read_task` 不是这次要写的函数，保持原名。
+
+### 强制命名：加注释时也改公开函数名
+
+对话：`@ass 强制命名 给 adc_read_task 补注释`
+
+定义、声明和调用一起改，Service Name 用新名字：
+
+```c
+void Adc_ReadTask(void);
+
+void Adc_ReadTask(void)
+{
+    /* a. 启动转换并读回结果 */
+}
+
+void App_Run(void)
+{
+    Adc_ReadTask();
+}
+```
+
+`static` 函数不在这次改名范围内。
+
 ## 后补注释 — 初始作者未知
 
 文件里已有代码、没有本规范文件头时，文件头与旧函数 `Author` 写 `未知`；本次补注释另记一行。
