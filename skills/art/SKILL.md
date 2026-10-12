@@ -1,20 +1,20 @@
 ---
-name: ass
+name: art
 description: >-
-  ASS / ass / A / @ASS / /ASS (case-insensitive): DiagStack C/H comments + MISRA C
+  ART / art / @ART / /ART (case-insensitive): DiagStack C/H comments + MISRA C
   code fixes in one pass. File banner, section blocks, .h brief / .c full Service
   Name, mandatory a./1. in-body steps for complex functions, then MISRA (Yoda,
   braces, 0U, (void), switch default). Public functions use AUTOSAR Classic names
-  (Adc_ReadTask) only when writing code, or when the user forces it (强制命名);
-  comment-only keeps the original names. Trigger when user says ASS, @ASS, /ASS, A,
-  ass, or asks for DiagStack comment + MISRA.
+  (Adc_ReadTask) when writing code, or when the user says ArtStd / art_std /
+  artstd (any case). Comment-only keeps the original names. Trigger on ART, @ART,
+  /ART, art, ArtStd, art_std, or DiagStack comment + MISRA.
 ---
 
-# ASS — DiagStack 注释 + MISRA C 改码
+# ART — DiagStack 注释 + MISRA C 改码
 
-**短调用名（不区分大小写）**：`ASS` / `ass` / `@ASS` / `/ASS` / `A`
+**短调用名（不区分大小写）**：`ART` / `art` / `@ART` / `/ART`
 
-> 目录名必须为小写 `ass`（Cursor 要求 skill 文件夹用小写）；对话里仍可写 `ASS`。
+> 目录名必须为小写 `art`（Cursor 要求 skill 文件夹用小写）；对话里仍可写 `ART`。旧名 `ass` / `ASS` / `A` 不再触发。
 
 任意项目对话中说上述任一即可触发。本 skill **始终**先加齐注释，再按 MISRA 改码。
 
@@ -27,15 +27,15 @@ description: >-
 按顺序取，取到即停：
 
 1. 本轮对话写明：`作者 ZS`、`author ZS`（只影响这一轮，不改文件）
-2. 当前工程根目录 `.ass-author`（仅一行名字；只影响这个工程）
+2. 当前工程根目录 `.art-author`（仅一行名字；只影响这个工程）
 3. 与本 `SKILL.md` 同级的 `AUTHOR`（默认 `YYH`）
 
 用户当次明确说「作者留空」时，作者列留空。不要猜 git 用户名。
 
-永久改名并让云端、本机一致：把新名字写入仓库 `skills/ass/AUTHOR`，再跑安装脚本。脚本把同一份写到这两处（云端机器和本机各跑一次）：
+永久改名并让云端、本机一致：把新名字写入仓库 `skills/art/AUTHOR`，再跑安装脚本。脚本把同一份写到这两处（云端机器和本机各跑一次）：
 
-- `~/.cursor/skills/ass/AUTHOR`（Windows：`%USERPROFILE%\.cursor\skills\ass\AUTHOR`）
-- `~/.agents/skills/ass/AUTHOR`（Windows：`%USERPROFILE%\.agents\skills\ass\AUTHOR`）
+- `~/.cursor/skills/art/AUTHOR`（Windows：`%USERPROFILE%\.cursor\skills\art\AUTHOR`）
+- `~/.agents/skills/art/AUTHOR`（Windows：`%USERPROFILE%\.agents\skills\art\AUTHOR`）
 
 三处内容必须相同。对照见 [examples.md](examples.md) 的「作者名示例」。
 
@@ -72,25 +72,25 @@ description: >-
 
 | 需求 | 函数名 |
 |------|--------|
-| 只加注释、补注释，或默认 `@ass` / `ASS` / `A`（含随后的 MISRA 改码） | **不改**原函数名。Service Name 写原名 |
+| 只加注释、补注释，或默认 `@art` / `ART`（含随后的 MISRA 改码） | **不改**原函数名。Service Name 写原名 |
 | 写代码，并套用本注释标准（实现、新增、改写公开函数） | 本轮**新写或改写**的公开函数用上面的形式。无关的旧函数不顺手改名 |
-| 强制命名：`强制命名`、`强制 AUTOSAR`、`AUTOSAR命名`、`按 AUTOSAR Classic 改函数名` | 加注释的同时，把不合规的公开函数改成该形式 |
+| 改名指令：`ArtStd`、`artstd`、`Artstd`、`ARTSTD`、`art_std`（大小写不限，`art` 与 `std` 之间可加一个下划线） | 加注释的同时，把不合规的公开函数改成该形式 |
 
 示例见 [examples.md](examples.md) 的「公开函数命名」。
 
 ## 执行顺序（必须）
 
 1. **注释**：文件头、分区、`.h` 简写 / `.c` 完整 Service Name、复杂函数体内 `a.`/`1.` 步骤注释。Service Name 用本轮最终会留下的函数名
-2. **命名**：仅「写代码」或「强制命名」时，按上一节改公开函数名并改齐引用
+2. **命名**：仅「写代码」或用户说了 `ArtStd` / `art_std` / `artstd`（大小写不限）时，按上一节改公开函数名并改齐引用
 3. **改码**：按下方 MISRA 条款修复；保持功能等价；改动处步骤注释仍要保留/更新。MISRA 本身不作为改函数名的理由
 4. **自检**：无 `//`；复杂分支有体内步骤注释；无无括号控制语句；字面量带 `U`/`UL` 等后缀；该改名时公开函数已是 `Adc_ReadTask` 这种形式，只加注释时原名还在
 
 ## 何时套用
 
-- 用户说「ASS」「@ASS」「/ASS」「A」「ass」（大小写均可）
+- 用户说「ART」「@ART」「/ART」「art」（大小写均可）
 - 用户要求 DiagStack 注释、Can 风格注释、并按 MISRA 改码
 - 审查/整改 DiagStack 或 Boot `.c` / `.h`
-- 用户说「强制命名」「强制 AUTOSAR」「AUTOSAR命名」「按 AUTOSAR Classic 改函数名」：加注释并改公开函数名
+- 用户说「ArtStd」「artstd」「Artstd」「ARTSTD」或「art_std」（大小写不限）：加注释并改公开函数名
 
 ---
 
@@ -259,7 +259,7 @@ if (ret) {
 Boot_FlagPara_ClearBootRequest(&s_stFinishMeta);
 ```
 
-**合格（ASS）：**
+**合格（ART）：**
 
 ```c
 /* a. 可选输出初始化：默认 NRC 为 OK */
@@ -274,7 +274,7 @@ if (0U != ret)
 (void)Boot_FlagPara_ClearBootRequest(&s_stFinishMeta);
 ```
 
-复杂分步函数的完整注释范例见 [examples.md](examples.md)；ASS 在同类代码上再叠加本文件 M1–M8。
+复杂分步函数的完整注释范例见 [examples.md](examples.md)；ART 在同类代码上再叠加本文件 M1–M8。
 
 ## 不要做的事
 
@@ -284,6 +284,6 @@ if (0U != ret)
 - 不要在 `.h` 写 Arguments / Return Value
 - 不要省略文件头与 END OF FILE
 - 不要把后补注释的人写成「初始发布版本」的作者
-- 不要只改一处 `AUTHOR`：仓库、`~/.cursor/skills/ass/AUTHOR`、`~/.agents/skills/ass/AUTHOR` 要一致
-- 不要在只加注释时修改函数名。要改名必须是写代码，或用户说了「强制命名」
+- 不要只改一处 `AUTHOR`：仓库、`~/.cursor/skills/art/AUTHOR`、`~/.agents/skills/art/AUTHOR` 要一致
+- 不要在只加注释时修改函数名。要改已有公开函数的名字，用户必须说 `ArtStd`、`art_std` 或 `artstd`（大小写不限）
 - 不要给 `static` 函数套 AUTOSAR 公开命名，也不要改成 `Adc_Read_Task` 这种单词之间再加下划线的形式

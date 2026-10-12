@@ -1,10 +1,10 @@
-# Install ass (ASS) skill to user skill dirs Cursor actually scans.
+# Install art (ART) skill to user skill dirs Cursor actually scans.
 param(
     [string]$RepoRoot = (Split-Path $PSScriptRoot -Parent)
 )
 
 $ErrorActionPreference = "Stop"
-$SkillName = "ass"
+$SkillName = "art"
 $SkillSrc = Join-Path $RepoRoot "skills\$SkillName"
 
 if (-not (Test-Path $SkillSrc)) {
@@ -20,7 +20,7 @@ function Install-To([string]$Root) {
     $dst = Join-Path $Root $SkillName
     $keepKey = Get-PathKey $dst
 
-    foreach ($legacy in @("ASS", "dsc-a", "dsc-b", "diagstack-c-comment-style", "Ass")) {
+    foreach ($legacy in @("ass", "ASS", "Ass", "ART", "dsc-a", "dsc-b", "diagstack-c-comment-style")) {
         $p = Join-Path $Root $legacy
         if (-not (Test-Path $p)) { continue }
         if ((Get-PathKey $p) -eq $keepKey) {
@@ -53,7 +53,7 @@ Install-To (Join-Path $env:USERPROFILE ".agents\skills")
 
 Write-Host ""
 Write-Host "Verify with:"
-Write-Host "  dir `$env:USERPROFILE\.cursor\skills\ass\SKILL.md"
-Write-Host "  dir `$env:USERPROFILE\.agents\skills\ass\SKILL.md"
+Write-Host "  dir `$env:USERPROFILE\.cursor\skills\art\SKILL.md"
+Write-Host "  dir `$env:USERPROFILE\.agents\skills\art\SKILL.md"
 Write-Host ""
-Write-Host "Then FULLY quit Cursor and reopen. New chat invoke: @ass  or  ASS  or  A"
+Write-Host "Then FULLY quit Cursor and reopen. New chat invoke: @art  or  ART. Rename with ArtStd"

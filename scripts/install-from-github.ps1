@@ -1,9 +1,10 @@
-# One-shot: download ass skill from GitHub into Cursor skill dirs (no clone needed).
+# One-shot: download art skill from GitHub into Cursor skill dirs (no clone needed).
 # PowerShell (after merge to main):
 #   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/main/scripts/install-from-github.ps1 | iex
 # Prefer the README "已验证" paste install if raw CDN caches an old script.
 #
-# Windows note: ASS and ass are the same path — never delete KeepPath while cleaning legacy.
+# Windows note: ART and art are the same path — never delete KeepPath while cleaning legacy.
+# ass and art are different paths, so the old ass directory is removed.
 
 param(
     [string]$Owner = "NeoYYH",
@@ -15,7 +16,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$SkillName = "ass"
+$SkillName = "art"
 $Files = @("SKILL.md", "examples.md", "AUTHOR")
 
 function Test-Url([string]$Url) {
@@ -29,7 +30,7 @@ function Test-Url([string]$Url) {
 
 function Resolve-Base {
     foreach ($ref in $Refs) {
-        foreach ($dir in @("ass", "ASS")) {
+        foreach ($dir in @("art", "ART")) {
             $probe = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/SKILL.md"
             $author = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/AUTHOR"
             Write-Host "Probe $probe"
@@ -42,7 +43,7 @@ function Resolve-Base {
             }
         }
     }
-    throw "Could not find skills/ass (or ASS) SKILL.md on GitHub. Check network / repo."
+    throw "Could not find skills/art (or ART) SKILL.md on GitHub. Check network / repo."
 }
 
 function Get-PathKey([string]$Path) {
@@ -51,8 +52,9 @@ function Get-PathKey([string]$Path) {
 
 function Remove-LegacyDirs([string]$Root, [string]$KeepPath) {
     $keepKey = Get-PathKey $KeepPath
-    # On Windows ASS and ass are the same folder — never delete KeepPath.
-    foreach ($legacy in @("ASS", "dsc-a", "dsc-b", "diagstack-c-comment-style", "Ass")) {
+    # On Windows ART and art are the same folder — never delete KeepPath.
+    # ass is a different folder and should be removed.
+    foreach ($legacy in @("ass", "ASS", "Ass", "ART", "dsc-a", "dsc-b", "diagstack-c-comment-style")) {
         $p = Join-Path $Root $legacy
         if (-not (Test-Path $p)) { continue }
         if ((Get-PathKey $p) -eq $keepKey) {
@@ -96,6 +98,6 @@ Install-FromGitHub (Join-Path $env:USERPROFILE ".cursor\skills")
 Install-FromGitHub (Join-Path $env:USERPROFILE ".agents\skills")
 
 Write-Host ""
-Write-Host "OK. Fully quit Cursor, reopen, NEW chat, type: @ass"
-Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\ass"
-Write-Host "Check: dir $env:USERPROFILE\.agents\skills\ass"
+Write-Host "OK. Fully quit Cursor, reopen, NEW chat, type: @art"
+Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\art"
+Write-Host "Check: dir $env:USERPROFILE\.agents\skills\art"

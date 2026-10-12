@@ -1,59 +1,59 @@
-# DiagStack 注释示例（ass / ASS skill）
+# DiagStack 注释示例（art / ART skill）
 
-调用 **@ass** / **ASS** / **A**（不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。
+调用 **@art** / **ART**（不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。要改已有公开函数名时说 **ArtStd** / **art_std** / **artstd**（大小写不限）。
 
-> 磁盘目录必须是小写 `ass/`。
+> 磁盘目录必须是小写 `art/`。
 >
 > 默认作者是 `YYH`（`AUTHOR` 文件）。原先没有注释的文件，初始发布版本作者写 `未知`，不要写成后来补注释的人。
 
 ## 作者名示例
 
-默认文件 `skills/ass/AUTHOR`（安装后与 `SKILL.md` 同级）：
+默认文件 `skills/art/AUTHOR`（安装后与 `SKILL.md` 同级）：
 
 ```text
 YYH
 ```
 
-不写作者、也不建 `.ass-author` 时，新建文件用 `YYH`。
+不写作者、也不建 `.art-author` 时，新建文件用 `YYH`。
 
 ### 永久改成 ZS，并同步云端和本机
 
-把仓库里的 `skills/ass/AUTHOR` 改成一行 `ZS`，然后安装。脚本会把同一份写到 Cursor 扫描的两个目录。云端机器和本机各执行一次。
+把仓库里的 `skills/art/AUTHOR` 改成一行 `ZS`，然后安装。脚本会把同一份写到 Cursor 扫描的两个目录。云端机器和本机各执行一次。
 
 Linux / macOS（含云端）：
 
 ```bash
-printf '%s\n' 'ZS' > skills/ass/AUTHOR
+printf '%s\n' 'ZS' > skills/art/AUTHOR
 ./scripts/install.sh
 ```
 
 Windows 本机：
 
 ```powershell
-Set-Content -Path skills\ass\AUTHOR -Value "ZS" -Encoding ascii
+Set-Content -Path skills\art\AUTHOR -Value "ZS" -Encoding ascii
 .\scripts\install.ps1
 ```
 
 装完这两处都是 `ZS`：
 
-- `%USERPROFILE%\.cursor\skills\ass\AUTHOR`
-- `%USERPROFILE%\.agents\skills\ass\AUTHOR`
+- `%USERPROFILE%\.cursor\skills\art\AUTHOR`
+- `%USERPROFILE%\.agents\skills\art\AUTHOR`
 
 ### 只改当前工程
 
-工程根目录 `.ass-author` 写一行 `ZS`。不改 `AUTHOR`，所以云端和其他工程仍是 `YYH`。
+工程根目录 `.art-author` 写一行 `ZS`。不改 `AUTHOR`，所以云端和其他工程仍是 `YYH`。
 
 ### 只改这一轮
 
 `AUTHOR` 仍是 `YYH`，本轮记成 `LS`：
 
 ```text
-@ass 作者 LS 给 Can.c 补注释
+@art 作者 LS 给 Can.c 补注释
 ```
 
 ### 默认 YYH，新建文件
 
-对话：`@ass 新建 Can.c`
+对话：`@art 新建 Can.c`
 
 ```c
 /*==============================================================================
@@ -81,7 +81,7 @@ Set-Content -Path skills\ass\AUTHOR -Value "ZS" -Encoding ascii
 
 ### 默认 YYH，旧文件原来没有注释
 
-`Can.c` 里已有 `Can_Init`，没有文件头。对话：`@ass 给 Can.c 补注释`
+`Can.c` 里已有 `Can_Init`，没有文件头。对话：`@art 给 Can.c 补注释`
 
 文件头和旧函数不把 `YYH` 写成初始作者；`YYH` 只出现在本次修订行。本轮新写的函数才用 `YYH`。
 
@@ -126,7 +126,7 @@ Set-Content -Path skills\ass\AUTHOR -Value "ZS" -Encoding ascii
 
 ### 只加注释：不改名
 
-对话：`@ass 给 adc_read_task 补注释`
+对话：`@art 给 adc_read_task 补注释`
 
 ```c
 /*
@@ -146,7 +146,7 @@ void adc_read_task(void)
 
 ### 写代码并套用注释标准：新函数按 AUTOSAR Classic
 
-对话：`@ass 写一个读 ADC 的任务函数`
+对话：`@art 写一个读 ADC 的任务函数`
 
 ```c
 /*
@@ -166,9 +166,9 @@ void Adc_ReadTask(void)
 
 同文件里已有的 `adc_read_task` 不是这次要写的函数，保持原名。
 
-### 强制命名：加注释时也改公开函数名
+### ArtStd：加注释时也改公开函数名
 
-对话：`@ass 强制命名 给 adc_read_task 补注释`
+`ArtStd`、`artstd`、`Artstd`、`ARTSTD`、`art_std` 是同一条指令。对话：`ArtStd 给 adc_read_task 补注释`
 
 定义、声明和调用一起改，Service Name 用新名字：
 
