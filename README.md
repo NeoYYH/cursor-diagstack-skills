@@ -11,6 +11,15 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 
 行为：**先加齐 DiagStack 注释，再按 MISRA C 改码**。
 
+作者名不写死。任选一处放一个只有一行名字的文件（例如内容为 `ZS`），重装 skill 不会覆盖：
+
+- 只影响当前工程：工程根目录 `.ass-author`
+- 所有工程默认：`%USERPROFILE%\.cursor\ass-author`（Linux / macOS：`~/.cursor/ass-author`）
+
+当次对话写 `作者 ZS` 优先于文件。都没配置时作者写 `未知`。
+
+已有代码但原来没有注释时：修订记录第一行是 `V1.0  未知  未知  初始发布版本`，补注释的人只出现在下一行。
+
 > Skill 目录必须是小写 **`ass/`**（Windows 上 `ASS` 与 `ass` 是同一路径，勿再建大写目录）。
 
 ## 本机安装（Windows · 已验证）
@@ -84,6 +93,8 @@ cursor-diagstack-skills/
 | `@ASS` / `@ass` 找不到 Skill | 只装在云端，本机没有 | 用上方 PowerShell 装到 `%USERPROFILE%\.cursor\skills\ass` |
 | `Removed legacy: ...\ASS` 后下载失败 | Windows 上 ASS=ass，删遗留时连目标一起删了 | 用已修复脚本，或用上方「已验证」粘贴安装 |
 | 装完仍看不到 | 未重启 / 未新开对话 | 完全退出 Cursor 后再开新 chat |
+| 注释作者变成 `YYH` 或别人的名字 | 示例名被照抄，或没配作者文件 | 写 `.ass-author` / `~/.cursor/ass-author`，或当次说 `作者 ZS` |
+| 旧文件初始版本作者变成补注释的人 | 原先没有文件头 | 初始行作者保持 `未知`，本次另记 `V1.1` |
 
 ## Skill 列表
 
