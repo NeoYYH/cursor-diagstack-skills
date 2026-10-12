@@ -41,6 +41,10 @@ function Install-To([string]$Root) {
     if (-not (Test-Path $skillMd)) {
         Write-Error "SKILL.md missing after install: $skillMd"
     }
+    $author = Join-Path $dst "AUTHOR"
+    if (-not (Test-Path $author)) {
+        Write-Error "AUTHOR missing after install: $author"
+    }
     Write-Host "Installed: $dst"
 }
 

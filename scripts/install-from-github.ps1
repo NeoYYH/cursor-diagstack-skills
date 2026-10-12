@@ -9,14 +9,14 @@ param(
     [string]$Owner = "NeoYYH",
     [string]$Repo = "cursor-diagstack-skills",
     [string[]]$Refs = @(
-        "main",
-        "cursor/fix-ass-skill-install-d292"
+        "cursor/ass-author-revision-70e2",
+        "main"
     )
 )
 
 $ErrorActionPreference = "Stop"
 $SkillName = "ass"
-$Files = @("SKILL.md", "examples.md")
+$Files = @("SKILL.md", "examples.md", "AUTHOR")
 
 function Test-Url([string]$Url) {
     try {
@@ -31,8 +31,9 @@ function Resolve-Base {
     foreach ($ref in $Refs) {
         foreach ($dir in @("ass", "ASS")) {
             $probe = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/SKILL.md"
+            $author = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/AUTHOR"
             Write-Host "Probe $probe"
-            if (Test-Url $probe) {
+            if ((Test-Url $probe) -and (Test-Url $author)) {
                 return @{
                     Ref = $ref
                     Dir = $dir

@@ -11,14 +11,16 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 
 行为：**先加齐 DiagStack 注释，再按 MISRA C 改码**。
 
-作者名不写死。任选一处放一个只有一行名字的文件（例如内容为 `ZS`），重装 skill 不会覆盖：
+默认作者是 **YYH**，写在 [skills/ass/AUTHOR](skills/ass/AUTHOR)。没改过就用这个名字。
 
-- 只影响当前工程：工程根目录 `.ass-author`
-- 所有工程默认：`%USERPROFILE%\.cursor\ass-author`（Linux / macOS：`~/.cursor/ass-author`）
+改名并同步到云端和本机：把 `AUTHOR` 改成一行新名字，然后在**云端机器**和**本机**各跑一次安装。脚本会把同一份写到 Cursor 扫描的两个目录：
 
-当次对话写 `作者 ZS` 优先于文件。都没配置时作者写 `未知`。对照示例见 [skills/ass/examples.md](skills/ass/examples.md) 的「作者名示例」。
+- `%USERPROFILE%\.cursor\skills\ass\AUTHOR`
+- `%USERPROFILE%\.agents\skills\ass\AUTHOR`
 
-已有代码但原来没有注释时：修订记录第一行是 `V1.0  未知  未知  初始发布版本`，补注释的人只出现在下一行。
+当次对话写 `作者 ZS` 只影响这一轮。只影响当前工程时，在工程根目录放 `.ass-author`。对照见 [skills/ass/examples.md](skills/ass/examples.md) 的「作者名示例」。
+
+已有代码但原来没有注释时：修订记录第一行是 `V1.0  未知  未知  初始发布版本`，补注释的人（默认 `YYH`）只出现在下一行。
 
 > Skill 目录必须是小写 **`ass/`**（Windows 上 `ASS` 与 `ass` 是同一路径，勿再建大写目录）。
 
@@ -39,6 +41,7 @@ foreach ($root in @(
   New-Item -ItemType Directory -Force -Path $dst | Out-Null
   Invoke-WebRequest "$base/SKILL.md" -OutFile "$dst\SKILL.md" -UseBasicParsing
   Invoke-WebRequest "$base/examples.md" -OutFile "$dst\examples.md" -UseBasicParsing
+  Invoke-WebRequest "$base/AUTHOR" -OutFile "$dst\AUTHOR" -UseBasicParsing
   Write-Host "Installed: $dst"
 }
 dir $env:USERPROFILE\.cursor\skills\ass\SKILL.md
@@ -48,7 +51,7 @@ dir $env:USERPROFILE\.agents\skills\ass\SKILL.md
 若 `main` 上还没有 `skills/ass`（PR 未合入），把上面的 `$base` 换成：
 
 ```powershell
-$base = "https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/cursor/fix-ass-skill-install-d292/skills/ass"
+$base = "https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/cursor/ass-author-revision-70e2/skills/ass"
 ```
 
 自检两个路径都有 `SKILL.md` 后：**完全退出 Cursor → 再开 → 新对话 → `@ass`**。
@@ -79,7 +82,8 @@ cursor-diagstack-skills/
 ├── skills/
 │   └── ass/                   # 必须小写
 │       ├── SKILL.md
-│       └── examples.md
+│       ├── examples.md
+│       └── AUTHOR                 # 默认 YYH，一行
 └── scripts/
     ├── install.ps1
     ├── install.sh
@@ -93,7 +97,7 @@ cursor-diagstack-skills/
 | `@ASS` / `@ass` 找不到 Skill | 只装在云端，本机没有 | 用上方 PowerShell 装到 `%USERPROFILE%\.cursor\skills\ass` |
 | `Removed legacy: ...\ASS` 后下载失败 | Windows 上 ASS=ass，删遗留时连目标一起删了 | 用已修复脚本，或用上方「已验证」粘贴安装 |
 | 装完仍看不到 | 未重启 / 未新开对话 | 完全退出 Cursor 后再开新 chat |
-| 注释作者变成 `YYH` 或别人的名字 | 示例名被照抄，或没配作者文件 | 写 `.ass-author` / `~/.cursor/ass-author`，或当次说 `作者 ZS` |
+| 作者不是想要的名字 | 仍是默认 `YYH`，或云端/本机 `AUTHOR` 不一致 | 改 `skills/ass/AUTHOR` 后，云端和本机都重装；或当次说 `作者 ZS` |
 | 旧文件初始版本作者变成补注释的人 | 原先没有文件头 | 初始行作者保持 `未知`，本次另记 `V1.1` |
 
 ## Skill 列表

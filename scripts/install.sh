@@ -21,6 +21,7 @@ install_to() {
   cp -R "${SRC}" "${dst}"
   echo "Installed: ${dst}"
   test -f "${dst}/SKILL.md" || { echo "ERROR: SKILL.md missing at ${dst}" >&2; exit 1; }
+  test -f "${dst}/AUTHOR" || { echo "ERROR: AUTHOR missing at ${dst}" >&2; exit 1; }
 }
 
 # Cursor discovers both of these user-level roots
