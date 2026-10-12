@@ -16,7 +16,7 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 - 只影响当前工程：工程根目录 `.ass-author`
 - 所有工程默认：`%USERPROFILE%\.cursor\ass-author`（Linux / macOS：`~/.cursor/ass-author`）
 
-当次对话写 `作者 ZS` 优先于文件。都没配置时作者写 `未知`。
+当次对话写 `作者 ZS` 优先于文件。都没配置时作者写 `未知`。对照示例见 [skills/ass/examples.md](skills/ass/examples.md) 的「作者名示例」。
 
 已有代码但原来没有注释时：修订记录第一行是 `V1.0  未知  未知  初始发布版本`，补注释的人只出现在下一行。
 
