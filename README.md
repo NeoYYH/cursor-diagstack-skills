@@ -6,9 +6,11 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 
 | 写法 | 效果 |
 |------|------|
-| **`@art`** | 加载 skill（推荐） |
-| **`ART`** / **`art`** | 对话里点名即可，只加注释，不改函数名 |
-| **`ArtStd`** / **`art_std`** / **`artstd`** | 加注释，并按 AUTOSAR Classic 改公开函数名。大小写不限 |
+| **`@art`** / **`/art`** | 加载 skill。只加注释，不改函数名 |
+| **`@ArtStd`** / **`/ArtStd`** | 加注释，并按 AUTOSAR Classic 改公开函数名 |
+| **`@artstd`** / **`/artstd`** / **`@art_std`** / **`/art_std`** | 与 `@ArtStd` 相同。大小写不限 |
+
+没有 `@` 或 `/` 的 `ArtStd` 不触发。`@ArtStd` 对应技能目录 `artstd/`，`@art_std` 对应 `art_std/`。
 
 行为：**先加齐 DiagStack 注释，再按 MISRA C 改码**。
 
@@ -23,7 +25,7 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 
 已有代码但原来没有注释时：修订记录第一行是 `V1.0  未知  未知  初始发布版本`，补注释的人（默认 `YYH`）只出现在下一行。
 
-公开函数的 AUTOSAR Classic 名字是模块前缀加下划线，每个单词首字母大写，例如 `Adc_ReadTask`。只说 `@art` 不改原函数名。写代码并套用本标准时，新公开函数用这个名字。已有函数也要改名时说 **`ArtStd`**（或 `art_std`、`artstd`，大小写不限）。
+公开函数的 AUTOSAR Classic 名字是模块前缀加下划线，每个单词首字母大写，例如 `Adc_ReadTask`。只说 `@art` 不改原函数名。写代码并套用本标准时，新公开函数用这个名字。已有函数也要改名时用 **`@ArtStd`** 或 **`/ArtStd`**。
 
 > Skill 目录必须是小写 **`art/`**（Windows 上 `ART` 与 `art` 是同一路径，勿再建大写目录）。
 
@@ -48,9 +50,18 @@ foreach ($root in @(
   Invoke-WebRequest "$base/examples.md" -OutFile "$dst\examples.md" -UseBasicParsing
   Invoke-WebRequest "$base/AUTHOR" -OutFile "$dst\AUTHOR" -UseBasicParsing
   Write-Host "Installed: $dst"
+  $skillsRoot = $base.Substring(0, $base.LastIndexOf("/"))
+  foreach ($name in @("artstd", "art_std")) {
+    $alias = Join-Path $root $name
+    if (Test-Path $alias) { Remove-Item -Recurse -Force $alias }
+    New-Item -ItemType Directory -Force -Path $alias | Out-Null
+    Invoke-WebRequest "$skillsRoot/$name/SKILL.md" -OutFile "$alias\SKILL.md" -UseBasicParsing
+    Write-Host "Installed: $alias"
+  }
 }
 dir $env:USERPROFILE\.cursor\skills\art\SKILL.md
-dir $env:USERPROFILE\.agents\skills\art\SKILL.md
+dir $env:USERPROFILE\.cursor\skills\artstd\SKILL.md
+dir $env:USERPROFILE\.cursor\skills\art_std\SKILL.md
 ```
 
 若 `main` 上还没有 `skills/art`（PR 未合入），把上面的 `$base` 换成：
@@ -59,7 +70,7 @@ dir $env:USERPROFILE\.agents\skills\art\SKILL.md
 $base = "https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/cursor/ass-author-revision-70e2/skills/art"
 ```
 
-自检两个路径都有 `SKILL.md` 后：**完全退出 Cursor → 再开 → 新对话 → `@art`**。
+自检 `art`、`artstd`、`art_std` 都有 `SKILL.md` 后：**完全退出 Cursor → 再开 → 新对话 → `@art` 或 `/art`**。改公开函数名用 `@ArtStd` 或 `/ArtStd`。
 
 ### 一键脚本（可选）
 
@@ -85,10 +96,14 @@ cursor-diagstack-skills/
 ├── README.md
 ├── LICENSE
 ├── skills/
-│   └── art/                   # 必须小写
-│       ├── SKILL.md
-│       ├── examples.md
-│       └── AUTHOR                 # 默认 YYH，一行
+│   ├── art/                   # 必须小写。@art / /art
+│   │   ├── SKILL.md
+│   │   ├── examples.md
+│   │   └── AUTHOR             # 默认 YYH，一行
+│   ├── artstd/                # @ArtStd / /ArtStd
+│   │   └── SKILL.md
+│   └── art_std/               # @art_std / /art_std
+│       └── SKILL.md
 └── scripts/
     ├── install.ps1
     ├── install.sh
@@ -104,13 +119,15 @@ cursor-diagstack-skills/
 | 装完仍看不到 | 未重启 / 未新开对话 | 完全退出 Cursor 后再开新 chat |
 | 作者不是想要的名字 | 仍是默认 `YYH`，或云端/本机 `AUTHOR` 不一致 | 改 `skills/art/AUTHOR` 后，云端和本机都重装；或当次说 `作者 ZS` |
 | 旧文件初始版本作者变成补注释的人 | 原先没有文件头 | 初始行作者保持 `未知`，本次另记 `V1.1` |
-| 只补注释却改了函数名 | 把 MISRA 或注释当成了重命名 | 只加注释保持原名；要改已有函数名再说 `ArtStd` / `art_std` / `artstd` |
+| 只补注释却改了函数名 | 把 MISRA 或注释当成了重命名 | 只加注释用 `@art`；要改已有函数名用 `@ArtStd` 或 `/ArtStd` |
 
 ## Skill 列表
 
 | Skill | 说明 |
 |-------|------|
-| [art](skills/art/SKILL.md) | DiagStack 注释 + MISRA（`@art` / `ART`）。改公开函数名用 `ArtStd` |
+| [art](skills/art/SKILL.md) | DiagStack 注释 + MISRA（`@art` / `/art`） |
+| [artstd](skills/artstd/SKILL.md) | 同上，并改公开函数名（`@ArtStd` / `/ArtStd`） |
+| [art_std](skills/art_std/SKILL.md) | 与 `artstd` 相同（`@art_std` / `/art_std`） |
 
 > 旧名 `ass` / `ASS` / `A`、`dsc-a` / `dsc-b` / `diagstack-c-comment-style` 已废弃。安装时会删掉旧的 `ass` 目录。
 

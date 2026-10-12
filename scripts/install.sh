@@ -29,12 +29,28 @@ install_to() {
 }
 
 # Cursor discovers both of these user-level roots
-install_to "${HOME}/.cursor/skills"
-install_to "${HOME}/.agents/skills"
+install_alias() {
+  local root="$1"
+  local name="$2"
+  local src="${REPO_ROOT}/skills/${name}"
+  local dst="${root}/${name}"
+  mkdir -p "${root}"
+  rm -rf "${dst}"
+  cp -R "${src}" "${dst}"
+  test -f "${dst}/SKILL.md" || { echo "ERROR: SKILL.md missing at ${dst}" >&2; exit 1; }
+  echo "Installed: ${dst}"
+}
+
+for root in "${HOME}/.cursor/skills" "${HOME}/.agents/skills"; do
+  install_to "${root}"
+  install_alias "${root}" "artstd"
+  install_alias "${root}" "art_std"
+done
 
 echo
 echo "Verify:"
 echo "  ls ~/.cursor/skills/art/SKILL.md"
-echo "  ls ~/.agents/skills/art/SKILL.md"
+echo "  ls ~/.cursor/skills/artstd/SKILL.md"
+echo "  ls ~/.cursor/skills/art_std/SKILL.md"
 echo
-echo "Then FULLY quit Cursor and reopen. New chat invoke: @art  or  ART. Rename with ArtStd"
+echo "Then FULLY quit Cursor and reopen. New chat: @art or /art. Rename: @ArtStd or /ArtStd"

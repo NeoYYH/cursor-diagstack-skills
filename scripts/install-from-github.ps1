@@ -34,7 +34,9 @@ function Resolve-Base {
             $probe = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/SKILL.md"
             $author = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/AUTHOR"
             Write-Host "Probe $probe"
-            if ((Test-Url $probe) -and (Test-Url $author)) {
+            $artstd = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/artstd/SKILL.md"
+            $artStd = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/art_std/SKILL.md"
+            if ((Test-Url $probe) -and (Test-Url $author) -and (Test-Url $artstd) -and (Test-Url $artStd)) {
                 return @{
                     Ref = $ref
                     Dir = $dir
@@ -92,12 +94,24 @@ function Install-FromGitHub([string]$Root) {
         throw "Install failed: SKILL.md missing under $dst"
     }
     Write-Host "Installed: $dst"
+
+    $skillsRoot = "https://raw.githubusercontent.com/$Owner/$Repo/$($resolved.Ref)/skills"
+    foreach ($name in @("artstd", "art_std")) {
+        $alias = Join-Path $Root $name
+        if (Test-Path $alias) { Remove-Item -Recurse -Force $alias }
+        New-Item -ItemType Directory -Force -Path $alias | Out-Null
+        $url = "$skillsRoot/$name/SKILL.md"
+        Write-Host "GET $url"
+        Invoke-WebRequest -Uri $url -OutFile (Join-Path $alias "SKILL.md") -UseBasicParsing
+        Write-Host "Installed: $alias"
+    }
 }
 
 Install-FromGitHub (Join-Path $env:USERPROFILE ".cursor\skills")
 Install-FromGitHub (Join-Path $env:USERPROFILE ".agents\skills")
 
 Write-Host ""
-Write-Host "OK. Fully quit Cursor, reopen, NEW chat, type: @art"
+Write-Host "OK. Fully quit Cursor, reopen, NEW chat: @art or /art. Rename: @ArtStd or /ArtStd"
 Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\art"
-Write-Host "Check: dir $env:USERPROFILE\.agents\skills\art"
+Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\artstd"
+Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\art_std"

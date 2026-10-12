@@ -5,9 +5,10 @@ description: >-
   code fixes in one pass. File banner, section blocks, .h brief / .c full Service
   Name, mandatory a./1. in-body steps for complex functions, then MISRA (Yoda,
   braces, 0U, (void), switch default). Public functions use AUTOSAR Classic names
-  (Adc_ReadTask) when writing code, or when the user says ArtStd / art_std /
-  artstd (any case). Comment-only keeps the original names. Trigger on ART, @ART,
-  /ART, art, ArtStd, art_std, or DiagStack comment + MISRA.
+  (Adc_ReadTask) when writing code, or when the user invokes @ArtStd / /ArtStd /
+  @art_std / /art_std / @artstd / /artstd (any case). Bare ArtStd without @ or /
+  does not rename. Comment-only keeps the original names. Trigger on @ART, /ART,
+  art, @ArtStd, /ArtStd, or DiagStack comment + MISRA.
 ---
 
 # ART — DiagStack 注释 + MISRA C 改码
@@ -74,14 +75,14 @@ description: >-
 |------|--------|
 | 只加注释、补注释，或默认 `@art` / `ART`（含随后的 MISRA 改码） | **不改**原函数名。Service Name 写原名 |
 | 写代码，并套用本注释标准（实现、新增、改写公开函数） | 本轮**新写或改写**的公开函数用上面的形式。无关的旧函数不顺手改名 |
-| 改名指令：`ArtStd`、`artstd`、`Artstd`、`ARTSTD`、`art_std`（大小写不限，`art` 与 `std` 之间可加一个下划线） | 加注释的同时，把不合规的公开函数改成该形式 |
+| 改名指令：`@ArtStd`、`/ArtStd`、`@artstd`、`/artstd`、`@art_std`、`/art_std`（大小写不限） | 加注释的同时，把不合规的公开函数改成该形式。没有 `@` 或 `/` 不算 |
 
 示例见 [examples.md](examples.md) 的「公开函数命名」。
 
 ## 执行顺序（必须）
 
 1. **注释**：文件头、分区、`.h` 简写 / `.c` 完整 Service Name、复杂函数体内 `a.`/`1.` 步骤注释。Service Name 用本轮最终会留下的函数名
-2. **命名**：仅「写代码」或用户说了 `ArtStd` / `art_std` / `artstd`（大小写不限）时，按上一节改公开函数名并改齐引用
+2. **命名**：仅「写代码」，或用户用 `@` / `/` 引出了 `ArtStd`、`artstd`、`art_std`（大小写不限）时，按上一节改公开函数名并改齐引用
 3. **改码**：按下方 MISRA 条款修复；保持功能等价；改动处步骤注释仍要保留/更新。MISRA 本身不作为改函数名的理由
 4. **自检**：无 `//`；复杂分支有体内步骤注释；无无括号控制语句；字面量带 `U`/`UL` 等后缀；该改名时公开函数已是 `Adc_ReadTask` 这种形式，只加注释时原名还在
 
@@ -90,7 +91,7 @@ description: >-
 - 用户说「ART」「@ART」「/ART」「art」（大小写均可）
 - 用户要求 DiagStack 注释、Can 风格注释、并按 MISRA 改码
 - 审查/整改 DiagStack 或 Boot `.c` / `.h`
-- 用户说「ArtStd」「artstd」「Artstd」「ARTSTD」或「art_std」（大小写不限）：加注释并改公开函数名
+- 用户说「@ArtStd」「/ArtStd」「@artstd」「/artstd」「@art_std」「/art_std」（大小写不限）：加注释并改公开函数名。单独的 `ArtStd` 不触发
 
 ---
 
@@ -285,5 +286,5 @@ if (0U != ret)
 - 不要省略文件头与 END OF FILE
 - 不要把后补注释的人写成「初始发布版本」的作者
 - 不要只改一处 `AUTHOR`：仓库、`~/.cursor/skills/art/AUTHOR`、`~/.agents/skills/art/AUTHOR` 要一致
-- 不要在只加注释时修改函数名。要改已有公开函数的名字，用户必须说 `ArtStd`、`art_std` 或 `artstd`（大小写不限）
+- 不要在只加注释时修改函数名。要改已有公开函数的名字，必须是 `@ArtStd`、`/ArtStd`、`@art_std`、`/art_std` 这种带 `@` 或 `/` 的写法（大小写不限）
 - 不要给 `static` 函数套 AUTOSAR 公开命名，也不要改成 `Adc_Read_Task` 这种单词之间再加下划线的形式

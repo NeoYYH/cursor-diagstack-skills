@@ -1,6 +1,6 @@
 # DiagStack 注释示例（art / ART skill）
 
-调用 **@art** / **ART**（不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。要改已有公开函数名时说 **ArtStd** / **art_std** / **artstd**（大小写不限）。
+调用 **@art** / **/art**（不区分大小写）时：先按本示例加齐注释，再按 SKILL.md 中 MISRA 规则改码。要改已有公开函数名时用 **@ArtStd** 或 **/ArtStd**（也可写成 `@artstd`、`/art_std`，大小写不限）。没有 `@` 或 `/` 的 `ArtStd` 不触发。
 
 > 磁盘目录必须是小写 `art/`。
 >
@@ -166,9 +166,9 @@ void Adc_ReadTask(void)
 
 同文件里已有的 `adc_read_task` 不是这次要写的函数，保持原名。
 
-### ArtStd：加注释时也改公开函数名
+### @ArtStd：加注释时也改公开函数名
 
-`ArtStd`、`artstd`、`Artstd`、`ARTSTD`、`art_std` 是同一条指令。对话：`ArtStd 给 adc_read_task 补注释`
+`@ArtStd`、`/ArtStd`、`@artstd`、`/artstd`、`@art_std`、`/art_std` 是同一条指令，大小写不限。对话：`@ArtStd 给 adc_read_task 补注释`
 
 定义、声明和调用一起改，Service Name 用新名字：
 

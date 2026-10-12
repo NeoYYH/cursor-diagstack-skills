@@ -48,12 +48,34 @@ function Install-To([string]$Root) {
     Write-Host "Installed: $dst"
 }
 
-Install-To (Join-Path $env:USERPROFILE ".cursor\skills")
-Install-To (Join-Path $env:USERPROFILE ".agents\skills")
+function Install-Alias([string]$Root, [string]$Name) {
+    $src = Join-Path $RepoRoot "skills\$Name"
+    if (-not (Test-Path (Join-Path $src "SKILL.md"))) {
+        Write-Error "Skill source not found: $src"
+    }
+    $dst = Join-Path $Root $Name
+    if (Test-Path $dst) { Remove-Item -Recurse -Force $dst }
+    New-Item -ItemType Directory -Force -Path $dst | Out-Null
+    Copy-Item -Recurse -Force (Join-Path $src "*") $dst
+    if (-not (Test-Path (Join-Path $dst "SKILL.md"))) {
+        Write-Error "SKILL.md missing after install: $dst"
+    }
+    Write-Host "Installed: $dst"
+}
+
+foreach ($root in @(
+    (Join-Path $env:USERPROFILE ".cursor\skills"),
+    (Join-Path $env:USERPROFILE ".agents\skills")
+)) {
+    Install-To $root
+    Install-Alias $root "artstd"
+    Install-Alias $root "art_std"
+}
 
 Write-Host ""
 Write-Host "Verify with:"
 Write-Host "  dir `$env:USERPROFILE\.cursor\skills\art\SKILL.md"
-Write-Host "  dir `$env:USERPROFILE\.agents\skills\art\SKILL.md"
+Write-Host "  dir `$env:USERPROFILE\.cursor\skills\artstd\SKILL.md"
+Write-Host "  dir `$env:USERPROFILE\.cursor\skills\art_std\SKILL.md"
 Write-Host ""
-Write-Host "Then FULLY quit Cursor and reopen. New chat invoke: @art  or  ART. Rename with ArtStd"
+Write-Host "Then FULLY quit Cursor and reopen. New chat: @art or /art. Rename: @ArtStd or /ArtStd"
