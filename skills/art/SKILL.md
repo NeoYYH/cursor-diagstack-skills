@@ -15,7 +15,7 @@ description: >-
 
 **短调用名（不区分大小写）**：`ART` / `art` / `@ART` / `/ART`
 
-> 目录名必须为小写 `art`（Cursor 要求 skill 文件夹用小写）；对话里仍可写 `ART`。旧名 `ass` / `ASS` / `A` 不再触发。
+> 目录名必须为小写 `art`（Cursor 要求 skill 文件夹用小写）；对话里仍可写 `ART`。
 
 任意项目对话中说上述任一即可触发。本 skill **始终**先加齐注释，再按 MISRA 改码。
 

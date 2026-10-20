@@ -16,7 +16,7 @@ install_to() {
   local dst="${root}/${SKILL_NAME}"
   mkdir -p "${root}"
   rm -rf "${dst}"
-  # Old skill name, plus other retired dirs. ART is removed only when it is not dst.
+  # Retired dirs. ART is removed only when it is not dst.
   rm -rf "${root}/ass" "${root}/ASS" "${root}/Ass" \
     "${root}/dsc-a" "${root}/dsc-b" "${root}/diagstack-c-comment-style"
   if [[ -d "${root}/ART" && "${root}/ART" != "${dst}" ]]; then

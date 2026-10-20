@@ -4,7 +4,6 @@
 # Prefer the README "已验证" paste install if raw CDN caches an old script.
 #
 # Windows note: ART and art are the same path — never delete KeepPath while cleaning legacy.
-# ass and art are different paths, so the old ass directory is removed.
 
 param(
     [string]$Owner = "NeoYYH",
@@ -55,7 +54,6 @@ function Get-PathKey([string]$Path) {
 function Remove-LegacyDirs([string]$Root, [string]$KeepPath) {
     $keepKey = Get-PathKey $KeepPath
     # On Windows ART and art are the same folder — never delete KeepPath.
-    # ass is a different folder and should be removed.
     foreach ($legacy in @("ass", "ASS", "Ass", "ART", "dsc-a", "dsc-b", "diagstack-c-comment-style")) {
         $p = Join-Path $Root $legacy
         if (-not (Test-Path $p)) { continue }

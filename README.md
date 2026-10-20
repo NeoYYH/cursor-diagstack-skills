@@ -131,7 +131,7 @@ cursor-diagstack-skills/
 | [artstd](skills/artstd/SKILL.md) | 同上，并改公开函数名（`@ArtStd` / `/ArtStd`） |
 | [art_std](skills/art_std/SKILL.md) | 与 `artstd` 相同（`@art_std` / `/art_std`） |
 
-> 旧名 `ass` / `ASS` / `A`、`dsc-a` / `dsc-b` / `diagstack-c-comment-style` 已废弃。安装时会删掉旧的 `ass` 目录。
+> `dsc-a` / `dsc-b` / `diagstack-c-comment-style` 已废弃。安装时会清掉这些旧目录。
 
 ## License
 
