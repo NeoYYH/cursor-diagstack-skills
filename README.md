@@ -66,11 +66,7 @@ dir $env:USERPROFILE\.cursor\skills\artstd\SKILL.md
 dir $env:USERPROFILE\.cursor\skills\art_std\SKILL.md
 ```
 
-若 `main` 上还没有 `skills/art`（PR 未合入），把上面的 `$base` 换成：
-
-```powershell
-$base = "https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/cursor/ass-author-revision-70e2/skills/art"
-```
+raw 地址有几分钟缓存。刚合并后下到旧文件时，在每个 `Invoke-WebRequest` 的地址后面加 `?t=` 加当前时间戳，或隔几分钟再试。
 
 自检 `art`、`artstd`、`art_std` 都有 `SKILL.md` 后：**完全退出 Cursor → 再开 → 新对话 → `@art` 或 `/art`**。改公开函数名用 `@ArtStd` 或 `/ArtStd`。
 

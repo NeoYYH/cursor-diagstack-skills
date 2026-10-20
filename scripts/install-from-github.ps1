@@ -1,5 +1,5 @@
 # One-shot: download art skill from GitHub into Cursor skill dirs (no clone needed).
-# PowerShell (after merge to main):
+# PowerShell:
 #   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/main/scripts/install-from-github.ps1 | iex
 # Prefer the README "已验证" paste install if raw CDN caches an old script.
 #
@@ -8,10 +8,7 @@
 param(
     [string]$Owner = "NeoYYH",
     [string]$Repo = "cursor-diagstack-skills",
-    [string[]]$Refs = @(
-        "cursor/ass-author-revision-70e2",
-        "main"
-    )
+    [string[]]$Refs = @("main")
 )
 
 $ErrorActionPreference = "Stop"
