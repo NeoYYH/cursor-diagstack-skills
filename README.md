@@ -1,6 +1,14 @@
-# Cursor DiagStack Skills
+# Cursor Automotive Electronics Annotation Standards
 
-PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https://cursor.com/docs/skills) 集合。
+面向汽车电子嵌入式 C 代码的 [Cursor Agent Skills](https://cursor.com/docs/skills) 集合：统一注释规范，按 MISRA C 改码，并按 AUTOSAR Classic 命名公开函数。不限于诊断栈，适用于驱动、通信、Boot、应用等各层的 `.c` / `.h`。
+
+注释版式最早来自 PK2C / Traveo II 诊断栈（DiagStack），现在作为通用的汽车电子注释标准使用。
+
+| 内容 | 规则 |
+|------|------|
+| 注释 | 文件头、分区、`.h` 简写 / `.c` 完整函数块、复杂函数体内 `a.` / `1.` 步骤 |
+| MISRA C | 大括号、Yoda 比较、`0U` 等后缀、`(void)` 丢弃返回值、`switch` 有 `default`、魔法数字提成宏 |
+| 命名 | 公开函数用 AUTOSAR Classic：模块前缀 + 下划线 + 每个单词首字母大写，如 `Adc_ReadTask` |
 
 ## 调用方式（全局 · 不区分大小写）
 
@@ -12,7 +20,7 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 
 没有 `@` 或 `/` 的 `ArtStd` 不触发。`@ArtStd` 对应技能目录 `artstd/`，`@art_std` 对应 `art_std/`。
 
-行为：**先加齐 DiagStack 注释，再按 MISRA C 改码**。
+行为：**先加齐汽车电子注释，再按 MISRA C 改码**。
 
 默认作者是 **YYH**，写在 [skills/art/AUTHOR](skills/art/AUTHOR)。没改过就用这个名字。
 
@@ -123,7 +131,7 @@ cursor-diagstack-skills/
 
 | Skill | 说明 |
 |-------|------|
-| [art](skills/art/SKILL.md) | DiagStack 注释 + MISRA（`@art` / `/art`） |
+| [art](skills/art/SKILL.md) | 汽车电子注释 + MISRA C（`@art` / `/art`） |
 | [artstd](skills/artstd/SKILL.md) | 同上，并改公开函数名（`@ArtStd` / `/ArtStd`） |
 | [art_std](skills/art_std/SKILL.md) | 与 `artstd` 相同（`@art_std` / `/art_std`） |
 
