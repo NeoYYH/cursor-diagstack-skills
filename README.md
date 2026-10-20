@@ -27,6 +27,8 @@ PK2C / Traveo II 诊断栈（DiagStack）相关的 [Cursor Agent Skills](https:/
 
 公开函数的 AUTOSAR Classic 名字是模块前缀加下划线，每个单词首字母大写，例如 `Adc_ReadTask`。只说 `@art` 不改原函数名。写代码并套用本标准时，新公开函数用这个名字。已有函数也要改名时用 **`@ArtStd`** 或 **`/ArtStd`**。
 
+有含义的数字改成模块前缀宏，例如 `ADC_SAMPLE_TIMEOUT_MS`。`0U` 和 `1U` 不包成宏。
+
 > Skill 目录必须是小写 **`art/`**（Windows 上 `ART` 与 `art` 是同一路径，勿再建大写目录）。
 
 ## 本机安装（Windows · 已验证）

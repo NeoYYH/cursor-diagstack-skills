@@ -325,6 +325,23 @@ static void Can_Internal_Init(const Can_GroupHandleType *pstHandle)
 }
 ```
 
+## 魔法数字改为宏
+
+通道、长度、超时、掩码、阈值不要直接写在语句里。`0U` 和 `1U` 保持原样。
+
+```c
+#define ADC_READ_CHANNEL_ID                 (3U)                             /* 周期采样使用的 ADC 通道 */
+#define ADC_SAMPLE_TIMEOUT_MS               (10U)                            /* 单次转换超时 */
+
+if (ADC_READ_CHANNEL_ID == u8Channel)
+{
+    if (ADC_SAMPLE_TIMEOUT_MS <= u32ElapsedMs)
+    {
+        return E_NOT_OK;
+    }
+}
+```
+
 ## Can_Cfg.h — 宏 + 条件编译说明
 
 ```c
