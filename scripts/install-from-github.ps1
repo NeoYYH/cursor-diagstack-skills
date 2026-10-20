@@ -1,22 +1,22 @@
-# One-shot: download ass skill from GitHub into Cursor skill dirs (no clone needed).
+# One-shot: download art skill from GitHub into Cursor skill dirs (no clone needed).
 # PowerShell (after merge to main):
 #   irm https://raw.githubusercontent.com/NeoYYH/cursor-diagstack-skills/main/scripts/install-from-github.ps1 | iex
 # Prefer the README "已验证" paste install if raw CDN caches an old script.
 #
-# Windows note: ASS and ass are the same path — never delete KeepPath while cleaning legacy.
+# Windows note: ART and art are the same path — never delete KeepPath while cleaning legacy.
 
 param(
     [string]$Owner = "NeoYYH",
     [string]$Repo = "cursor-diagstack-skills",
     [string[]]$Refs = @(
-        "main",
-        "cursor/fix-ass-skill-install-d292"
+        "cursor/ass-author-revision-70e2",
+        "main"
     )
 )
 
 $ErrorActionPreference = "Stop"
-$SkillName = "ass"
-$Files = @("SKILL.md", "examples.md")
+$SkillName = "art"
+$Files = @("SKILL.md", "examples.md", "AUTHOR")
 
 function Test-Url([string]$Url) {
     try {
@@ -29,10 +29,13 @@ function Test-Url([string]$Url) {
 
 function Resolve-Base {
     foreach ($ref in $Refs) {
-        foreach ($dir in @("ass", "ASS")) {
+        foreach ($dir in @("art", "ART")) {
             $probe = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/SKILL.md"
+            $author = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/$dir/AUTHOR"
             Write-Host "Probe $probe"
-            if (Test-Url $probe) {
+            $artstd = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/artstd/SKILL.md"
+            $artStd = "https://raw.githubusercontent.com/$Owner/$Repo/$ref/skills/art_std/SKILL.md"
+            if ((Test-Url $probe) -and (Test-Url $author) -and (Test-Url $artstd) -and (Test-Url $artStd)) {
                 return @{
                     Ref = $ref
                     Dir = $dir
@@ -41,7 +44,7 @@ function Resolve-Base {
             }
         }
     }
-    throw "Could not find skills/ass (or ASS) SKILL.md on GitHub. Check network / repo."
+    throw "Could not find skills/art (or ART) SKILL.md on GitHub. Check network / repo."
 }
 
 function Get-PathKey([string]$Path) {
@@ -50,8 +53,8 @@ function Get-PathKey([string]$Path) {
 
 function Remove-LegacyDirs([string]$Root, [string]$KeepPath) {
     $keepKey = Get-PathKey $KeepPath
-    # On Windows ASS and ass are the same folder — never delete KeepPath.
-    foreach ($legacy in @("ASS", "dsc-a", "dsc-b", "diagstack-c-comment-style", "Ass")) {
+    # On Windows ART and art are the same folder — never delete KeepPath.
+    foreach ($legacy in @("ass", "ASS", "Ass", "ART", "dsc-a", "dsc-b", "diagstack-c-comment-style")) {
         $p = Join-Path $Root $legacy
         if (-not (Test-Path $p)) { continue }
         if ((Get-PathKey $p) -eq $keepKey) {
@@ -89,12 +92,24 @@ function Install-FromGitHub([string]$Root) {
         throw "Install failed: SKILL.md missing under $dst"
     }
     Write-Host "Installed: $dst"
+
+    $skillsRoot = "https://raw.githubusercontent.com/$Owner/$Repo/$($resolved.Ref)/skills"
+    foreach ($name in @("artstd", "art_std")) {
+        $alias = Join-Path $Root $name
+        if (Test-Path $alias) { Remove-Item -Recurse -Force $alias }
+        New-Item -ItemType Directory -Force -Path $alias | Out-Null
+        $url = "$skillsRoot/$name/SKILL.md"
+        Write-Host "GET $url"
+        Invoke-WebRequest -Uri $url -OutFile (Join-Path $alias "SKILL.md") -UseBasicParsing
+        Write-Host "Installed: $alias"
+    }
 }
 
 Install-FromGitHub (Join-Path $env:USERPROFILE ".cursor\skills")
 Install-FromGitHub (Join-Path $env:USERPROFILE ".agents\skills")
 
 Write-Host ""
-Write-Host "OK. Fully quit Cursor, reopen, NEW chat, type: @ass"
-Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\ass"
-Write-Host "Check: dir $env:USERPROFILE\.agents\skills\ass"
+Write-Host "OK. Fully quit Cursor, reopen, NEW chat: @art or /art. Rename: @ArtStd or /ArtStd"
+Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\art"
+Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\artstd"
+Write-Host "Check: dir $env:USERPROFILE\.cursor\skills\art_std"
